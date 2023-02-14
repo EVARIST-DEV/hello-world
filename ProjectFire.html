@@ -1,0 +1,132 @@
+<html>
+  <head>
+	<title>REGISTRATION FORM</title>
+    <style>
+      #form {
+        width: 500px;
+        margin: 50px auto;
+        background-color: lightgray;
+        padding: 20px;
+      }
+
+      table {
+        width: 100%;
+        background-color: gainsboro;
+        border-collapse: collapse;
+      }
+
+      th, td {
+        border: 1px solid black;
+        padding: 10px;
+      }
+
+      th {
+        background-color: dimgray;
+        color: white;
+        text-align: left;
+      }
+
+	  button[type="submit"] {
+			background-color: green;
+			color: white;
+			padding: 10px 15px;
+			border: none;
+			border-radius: 5px;
+		}
+
+    </style>
+<head></head>
+    <script>
+      function checkForm() {
+        let name = document.getElementById("name").value;
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+        let dob = document.getElementById("dob").value;
+        let terms = document.getElementById("terms").checked;
+
+        if (!name) {
+          alert("Please enter your name.");
+          return false;
+        }
+        if (!email) {
+          alert("Please enter your email.");
+          return false;
+        }
+        if (!password) {
+          alert("Please enter a password.");
+          return false;
+        }
+        if (!dob) {
+          alert("Please enter your date of birth.");
+          return false;
+        }
+
+        let today = new Date();
+        let birthdate = new Date(dob);
+        let age = today.getFullYear() - birthdate.getFullYear();
+        let m = today.getMonth() - birthdate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthdate.getDate())) {
+          age--;
+        }
+
+        if (age < 18 || age > 55) {
+          alert("You must be between ages 18 and 55 to register.");
+          return false;
+        }
+
+        if (!terms) {
+          alert("Please accept the terms and conditions.");
+          return false;
+        }
+
+        let data = JSON.parse(localStorage.getItem("data")) || [];
+        data.push({
+          name: name,
+          email: email,
+          password: password,
+          dob: dob,
+          terms: terms
+        });
+        localStorage.setItem("data", JSON.stringify(data));
+        updateTable();
+
+        return false;
+      }
+
+      function updateTable() {
+        let data = JSON.parse(localStorage.getItem("data")) || [];
+        let table = document.getElementById("data-table");
+        table.innerHTML = "";
+
+        let header = document.createElement("tr");
+        header.innerHTML = "<th>Name</th><th>Email</th><th>Password</th><th>Dob</th><th>Accepted terms?</th>";
+        table.appendChild(header);
+
+        for (let i = 0; i < data.length; i++) {
+          let row = document.createElement("tr");
+          row.innerHTML = "<td>" + data[i].name + "</td>" +
+                         "<td>" + data[i].email + "</td>" +
+                         "<td>" + data[i].password + "</td>" +
+                         "<td>" + data[i].dob + "</td>" +
+                         "<td>" + (data[i].terms ? "Yes" : "No") + "</td>";
+          table.appendChild(row);
+        }
+      }
+    </script>
+  </head>
+  <body onload="updateTable()">
+    <form onsubmit="return checkForm()">
+        <input type="text" id="name" placeholder="Name"><br><br>
+        <input type="email" id="email" placeholder="Email"><br><br>
+        <input type="password" id="password" placeholder="Password"><br><br>
+        <input type="date" id="dob" placeholder="Date of Birth"><br><br>
+        <input type="checkbox" id="terms">I accept the terms and conditions<br><br>
+        <input type="submit" value="Submit">
+        </form>
+        <br><br>
+        <table id="data-table">
+        </table>
+        
+          </body>
+        </html>
+
